@@ -1,6 +1,6 @@
 # Featured Projects
 
-## Niro
+## Agent CICD
 
 Organization: Independent Research
 Dates: 2026
@@ -9,8 +9,8 @@ Gradient: from-blue-50 to-purple-50
 URL: https://app.agentcicd.com/
 URLLabel: View website
 BlogURL: https://app.agentcicd.com/blog
-Image: /images/niro-agentcicd.png
-ImageAlt: Niro product homepage
+Image: /images/agent-cicd.png
+ImageAlt: Agent CICD product homepage
 
 Agent evaluation and regression-testing platform for measuring agent quality across workflows, tool use, trajectories, annotations, and release comparisons
 

@@ -1,7 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { portfolio } from '../content/portfolio';
 
-const sections = [
+type NavItem = {
+  id: string;
+  label: string;
+  parentId?: string;
+};
+
+type NavSection = NavItem & {
+  children?: NavItem[];
+};
+
+const sections: NavSection[] = [
   { id: 'intro', label: 'Intro' },
   { id: 'projects', label: 'Featured Projects' },
   { id: 'publications', label: 'Publications' },
@@ -35,8 +45,74 @@ const assetSrc = (src: string) => {
   return `${import.meta.env.BASE_URL}${src.slice(1)}`;
 };
 
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
 export default function App() {
   const [activeSection, setActiveSection] = useState('intro');
+  const [activeItem, setActiveItem] = useState('intro');
+
+  const navigationSections: NavSection[] = useMemo(
+    () =>
+      sections.map((section) => {
+        if (section.id === 'projects') {
+          return {
+            ...section,
+            children: portfolio.projects.items.map((project) => ({
+              id: `project-${slugify(project.title)}`,
+              label: project.title,
+              parentId: section.id,
+            })),
+          };
+        }
+
+        if (section.id === 'publications') {
+          return {
+            ...section,
+            children: portfolio.publications.items.map((publication) => ({
+              id: `publication-${slugify(publication.title)}`,
+              label: publication.title,
+              parentId: section.id,
+            })),
+          };
+        }
+
+        if (section.id === 'experience') {
+          return {
+            ...section,
+            children: portfolio.experience.items.map((experience) => ({
+              id: `experience-${slugify(experience.company)}`,
+              label: experience.company,
+              parentId: section.id,
+            })),
+          };
+        }
+
+        if (section.id === 'education') {
+          return {
+            ...section,
+            children: portfolio.education.items.map((education) => ({
+              id: `education-${slugify(education.school)}`,
+              label: education.school,
+              parentId: section.id,
+            })),
+          };
+        }
+
+        return section;
+      }),
+    [],
+  );
+
+  const navigationItems = useMemo(
+    () => navigationSections.flatMap((section) => [section, ...(section.children ?? [])]),
+    [navigationSections],
+  );
+  const activeChildren =
+    navigationSections.find((section) => section.id === activeSection)?.children ?? [];
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -48,47 +124,102 @@ export default function App() {
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 200;
-      let currentSection = sections[0].id;
+      let currentItem = navigationItems[0];
 
-      for (const section of sections) {
+      for (const section of navigationItems) {
         const element = document.getElementById(section.id);
         if (element && scrollPosition >= element.offsetTop) {
-          currentSection = section.id;
+          currentItem = section;
         }
       }
 
-      setActiveSection(currentSection);
+      setActiveItem(currentItem.id);
+      setActiveSection(currentItem.parentId ?? currentItem.id);
     };
 
+    handleScroll();
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [navigationItems]);
 
   return (
     <div className="min-h-screen bg-white">
-      <nav className="fixed left-8 top-1/2 -translate-y-1/2 z-50 hidden lg:block">
-        <div className="space-y-6">
-          {sections.map((section) => (
-            <button
-              key={section.id}
-              onClick={() => scrollToSection(section.id)}
-              className="group block"
-            >
-              <span
-                className={`text-sm transition-colors ${
-                  activeSection === section.id
-                    ? 'text-gray-900'
-                    : 'text-gray-400 group-hover:text-gray-600'
-                }`}
+      <nav className="fixed left-8 top-1/2 -translate-y-1/2 z-50 hidden w-44 lg:block">
+        <div className="space-y-5">
+          {navigationSections.map((section) => (
+            <div key={section.id} className="space-y-2">
+              <button
+                onClick={() => scrollToSection(section.id)}
+                className="group block text-left"
               >
-                {section.label}
-              </span>
-            </button>
+                <span
+                  className={`text-sm transition-colors ${
+                    activeSection === section.id
+                      ? 'text-gray-900'
+                      : 'text-gray-400 group-hover:text-gray-600'
+                  }`}
+                >
+                  {section.label}
+                </span>
+              </button>
+              {activeSection === section.id && section.children && (
+                <div className="space-y-2 border-l border-gray-200 pl-3">
+                  {section.children.map((child) => (
+                    <button
+                      key={child.id}
+                      onClick={() => scrollToSection(child.id)}
+                      className="block max-w-full text-left"
+                    >
+                      <span
+                        className={`block truncate text-xs transition-colors ${
+                          activeItem === child.id
+                            ? 'text-gray-900'
+                            : 'text-gray-400 hover:text-gray-600'
+                        }`}
+                      >
+                        {child.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </nav>
 
-      <section id="intro" className="min-h-screen flex items-center px-8">
+      <nav className="fixed inset-x-0 top-0 z-50 border-b border-gray-200 bg-white/95 px-4 py-3 backdrop-blur lg:hidden">
+        <div className="flex gap-4 overflow-x-auto pb-1">
+          {navigationSections.map((section) => (
+            <button
+              key={section.id}
+              onClick={() => scrollToSection(section.id)}
+              className={`shrink-0 text-sm transition-colors ${
+                activeSection === section.id ? 'text-gray-900' : 'text-gray-400'
+              }`}
+            >
+              {section.label}
+            </button>
+          ))}
+        </div>
+        {activeChildren.length > 0 && (
+          <div className="mt-2 flex gap-3 overflow-x-auto">
+            {activeChildren.map((child) => (
+              <button
+                key={child.id}
+                onClick={() => scrollToSection(child.id)}
+                className={`shrink-0 text-xs transition-colors ${
+                  activeItem === child.id ? 'text-gray-900' : 'text-gray-400'
+                }`}
+              >
+                {child.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </nav>
+
+      <section id="intro" className="min-h-screen scroll-mt-24 flex items-center px-8 pt-24 lg:pt-0">
         <div className="max-w-3xl mx-auto space-y-12">
           <h1 className="text-7xl md:text-8xl tracking-tight text-gray-900">
             {portfolio.intro.name}
@@ -103,12 +234,13 @@ export default function App() {
         </div>
       </section>
 
-      <section id="projects" className="min-h-screen py-32 px-8">
+      <section id="projects" className="min-h-screen scroll-mt-24 py-32 px-8">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-5xl mb-20 text-gray-900">{portfolio.projects.title}</h2>
 
           <div className="space-y-24">
-            {portfolio.projects.items.map((project, index) => {
+            {portfolio.projects.items.map((project) => {
+              const projectId = `project-${slugify(project.title)}`;
               const visualFrame = project.image ? (
                 <div className="aspect-video overflow-hidden bg-gray-100 rounded-2xl">
                   <img
@@ -214,8 +346,9 @@ export default function App() {
               if (!visual) {
                 return (
                   <div
+                    id={projectId}
                     key={project.title}
-                    className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.7fr)] gap-10 border-l-2 border-gray-200 pl-8"
+                    className="grid scroll-mt-24 grid-cols-1 gap-10 border-l-2 border-gray-200 pl-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.7fr)]"
                   >
                     <div className="space-y-6">
                       {projectIntro}
@@ -230,8 +363,9 @@ export default function App() {
 
               return (
                 <div
+                  id={projectId}
                   key={project.title}
-                  className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.7fr)] gap-10 border-l-2 border-gray-200 pl-8"
+                  className="grid scroll-mt-24 grid-cols-1 gap-10 border-l-2 border-gray-200 pl-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.7fr)]"
                 >
                   <div className="space-y-8">
                     <div className="space-y-6">{projectIntro}</div>
@@ -245,12 +379,13 @@ export default function App() {
         </div>
       </section>
 
-      <section id="publications" className="py-32 px-8">
+      <section id="publications" className="scroll-mt-24 py-32 px-8">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-5xl mb-20 text-gray-900">{portfolio.publications.title}</h2>
           <div className="space-y-12">
             {portfolio.publications.items.map((publication) => (
               <a
+                id={`publication-${slugify(publication.title)}`}
                 key={publication.url}
                 href={publication.url}
                 target="_blank"
@@ -270,13 +405,17 @@ export default function App() {
         </div>
       </section>
 
-      <section id="experience" className="min-h-screen py-32 px-8 bg-gray-50">
+      <section id="experience" className="min-h-screen scroll-mt-24 py-32 px-8 bg-gray-50">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-5xl mb-20 text-gray-900">{portfolio.experience.title}</h2>
 
           <div className="space-y-16">
             {portfolio.experience.items.map((experience) => (
-              <div key={experience.company} className="border-l-2 border-gray-300 pl-8 space-y-4">
+              <div
+                id={`experience-${slugify(experience.company)}`}
+                key={experience.company}
+                className="scroll-mt-24 border-l-2 border-gray-300 pl-8 space-y-4"
+              >
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-2">
                   <div>
                     <h3 className="text-3xl text-gray-900">{experience.company}</h3>
@@ -303,7 +442,11 @@ export default function App() {
             <h2 className="text-5xl mb-20 text-gray-900">{portfolio.education.title}</h2>
             <div className="space-y-12">
               {portfolio.education.items.map((education) => (
-                <div key={education.school} className="border-l-2 border-gray-300 pl-8 space-y-2">
+                <div
+                  id={`education-${slugify(education.school)}`}
+                  key={education.school}
+                  className="scroll-mt-24 border-l-2 border-gray-300 pl-8 space-y-2"
+                >
                   <h3 className="text-2xl text-gray-900">{education.school}</h3>
                   <div className="text-gray-600">{education.degree}</div>
                   <div className="text-gray-400">{education.detail}</div>
@@ -314,7 +457,7 @@ export default function App() {
         </div>
       </section>
 
-      <section id="contact" className="min-h-screen flex items-center px-8">
+      <section id="contact" className="min-h-screen scroll-mt-24 flex items-center px-8">
         <div className="max-w-2xl w-full mx-auto text-center space-y-12">
           <h2 className="text-5xl text-gray-900">{portfolio.contact.title}</h2>
           <p className="text-xl text-gray-600">{portfolio.contact.message}</p>

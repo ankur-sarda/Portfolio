@@ -1,5 +1,12 @@
 # Publications
 
+## Agent CICD Blog
+
+Source: Agent CICD
+Year: 2026
+URL: https://app.agentcicd.com/blog
+Authors: Ankur Sarda
+
 ## Building Structured Generative AI Evaluation at Enterprise Scale
 
 Source: Oracle AI and Data Science Blog
