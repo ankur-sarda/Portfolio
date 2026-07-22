@@ -29,7 +29,7 @@ Tags:
 ## Goldman Sachs
 
 Role: Software Engineer
-Dates: 2017 - 2018
+Dates: 2014 - 2016
 
 Developed Spark and Scala-based distributed data systems and pipelines.
 

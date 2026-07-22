@@ -183,6 +183,8 @@ export const portfolio = {
     message: contactData?.paragraphs.join(' ') ?? '',
     email: contactData?.fields.Email ?? '',
     phone: contactData?.fields.Phone ?? '',
+    linkedin: contactData?.fields.LinkedIn ?? '',
+    x: contactData?.fields.X ?? '',
     footer: contactData?.fields.Footer ?? '',
   },
 };

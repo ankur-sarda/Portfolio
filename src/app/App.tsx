@@ -3,9 +3,10 @@ import { portfolio } from '../content/portfolio';
 
 const sections = [
   { id: 'intro', label: 'Intro' },
-  { id: 'projects', label: 'Projects' },
+  { id: 'projects', label: 'Featured Projects' },
   { id: 'publications', label: 'Publications' },
   { id: 'experience', label: 'Experience' },
+  { id: 'education', label: 'Education' },
   { id: 'contact', label: 'Contact' },
 ];
 
@@ -47,17 +48,16 @@ export default function App() {
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 200;
+      let currentSection = sections[0].id;
 
       for (const section of sections) {
         const element = document.getElementById(section.id);
-        if (element) {
-          const { offsetTop, offsetHeight } = element;
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setActiveSection(section.id);
-            break;
-          }
+        if (element && scrollPosition >= element.offsetTop) {
+          currentSection = section.id;
         }
       }
+
+      setActiveSection(currentSection);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -299,7 +299,7 @@ export default function App() {
             ))}
           </div>
 
-          <div className="mt-32">
+          <div id="education" className="mt-32 scroll-mt-24">
             <h2 className="text-5xl mb-20 text-gray-900">{portfolio.education.title}</h2>
             <div className="space-y-12">
               {portfolio.education.items.map((education) => (
@@ -319,7 +319,7 @@ export default function App() {
           <h2 className="text-5xl text-gray-900">{portfolio.contact.title}</h2>
           <p className="text-xl text-gray-600">{portfolio.contact.message}</p>
 
-          <div className="space-y-6 pt-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8 text-left">
             <a
               href={`mailto:${portfolio.contact.email}`}
               className="block p-6 border border-gray-200 rounded-2xl hover:border-gray-900 transition-all hover:shadow-lg group"
@@ -337,6 +337,30 @@ export default function App() {
               <div className="text-sm text-gray-400 mb-2">Phone</div>
               <div className="text-2xl text-gray-900 group-hover:text-gray-600">
                 {portfolio.contact.phone}
+              </div>
+            </a>
+
+            <a
+              href={portfolio.contact.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block p-6 border border-gray-200 rounded-2xl hover:border-gray-900 transition-all hover:shadow-lg group"
+            >
+              <div className="text-sm text-gray-400 mb-2">LinkedIn</div>
+              <div className="text-2xl text-gray-900 group-hover:text-gray-600">
+                linkedin.com/in/ankur-sarda
+              </div>
+            </a>
+
+            <a
+              href={portfolio.contact.x}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block p-6 border border-gray-200 rounded-2xl hover:border-gray-900 transition-all hover:shadow-lg group"
+            >
+              <div className="text-sm text-gray-400 mb-2">X</div>
+              <div className="text-2xl text-gray-900 group-hover:text-gray-600">
+                x.com/ankursarda
               </div>
             </a>
           </div>
