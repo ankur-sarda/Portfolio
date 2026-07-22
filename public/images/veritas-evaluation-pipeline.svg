@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Veritas evaluation pipeline</title>
+  <desc id="desc">A structured evaluation pipeline with dataset, specification, model or agent, evaluation stages, and reporting.</desc>
+  <rect width="1200" height="760" fill="#ffffff"/>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#4b5563"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#111827" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <text x="72" y="72" fill="#111827" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="700">Veritas Evaluation Pipeline</text>
+  <text x="72" y="112" fill="#6b7280" font-family="Inter, Arial, sans-serif" font-size="18">Structured GenAI evaluation from dataset and specification to scoring and reports</text>
+
+  <g filter="url(#shadow)">
+    <rect x="78" y="180" width="270" height="148" rx="22" fill="#eefbf0" stroke="#42a85b" stroke-width="3"/>
+    <text x="213" y="216" text-anchor="middle" fill="#374151" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">Dataset</text>
+    <rect x="112" y="248" width="72" height="42" rx="12" fill="#dcfce7" stroke="#86efac"/>
+    <text x="148" y="274" text-anchor="middle" fill="#374151" font-family="Inter, Arial, sans-serif" font-size="12">HF</text>
+    <rect x="198" y="248" width="72" height="42" rx="12" fill="#dcfce7" stroke="#86efac"/>
+    <text x="234" y="274" text-anchor="middle" fill="#374151" font-family="Inter, Arial, sans-serif" font-size="12">Files</text>
+    <rect x="284" y="248" width="36" height="42" rx="8" fill="#dcfce7" stroke="#86efac"/>
+    <text x="302" y="274" text-anchor="middle" fill="#374151" font-family="Inter, Arial, sans-serif" font-size="12">Obj</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="78" y="382" width="270" height="128" rx="22" fill="#fff7ed" stroke="#fb923c" stroke-width="3"/>
+    <text x="213" y="418" text-anchor="middle" fill="#374151" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">Specification</text>
+    <rect x="112" y="450" width="78" height="34" rx="9" fill="#ffedd5" stroke="#fdba74"/>
+    <text x="151" y="472" text-anchor="middle" fill="#374151" font-family="Inter, Arial, sans-serif" font-size="11">Testsuites</text>
+    <rect x="202" y="450" width="78" height="34" rx="9" fill="#ffedd5" stroke="#fdba74"/>
+    <text x="241" y="472" text-anchor="middle" fill="#374151" font-family="Inter, Arial, sans-serif" font-size="11">Evaluators</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="78" y="562" width="270" height="128" rx="22" fill="#faf5ff" stroke="#a855f7" stroke-width="3"/>
+    <text x="213" y="598" text-anchor="middle" fill="#374151" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">Model / Agent</text>
+    <rect x="116" y="630" width="90" height="34" rx="9" fill="#f3e8ff" stroke="#d8b4fe"/>
+    <text x="161" y="652" text-anchor="middle" fill="#374151" font-family="Inter, Arial, sans-serif" font-size="11">Endpoint</text>
+    <rect x="224" y="630" width="90" height="34" rx="9" fill="#f3e8ff" stroke="#d8b4fe"/>
+    <text x="269" y="652" text-anchor="middle" fill="#374151" font-family="Inter, Arial, sans-serif" font-size="11">OCI GenAI</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="500" y="166" width="560" height="410" rx="28" fill="#eff6ff" stroke="#3b82f6" stroke-width="3"/>
+    <text x="780" y="212" text-anchor="middle" fill="#1f2937" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700">Evaluation</text>
+    <g font-family="Inter, Arial, sans-serif" font-size="13" fill="#374151">
+      <rect x="570" y="252" width="420" height="62" rx="12" fill="#dbeafe" stroke="#93c5fd"/>
+      <text x="780" y="288" text-anchor="middle">Transformation: filtering, downsampling, perturbation, synthetic generation</text>
+      <rect x="570" y="344" width="420" height="62" rx="12" fill="#dbeafe" stroke="#93c5fd"/>
+      <text x="780" y="380" text-anchor="middle">Generation: LLMs, custom code, agents, external models</text>
+      <rect x="570" y="436" width="420" height="62" rx="12" fill="#dbeafe" stroke="#93c5fd"/>
+      <text x="780" y="472" text-anchor="middle">Evaluation: LLM judges, SQL plugins, action matching, custom checks</text>
+      <rect x="570" y="528" width="420" height="62" rx="12" fill="#dbeafe" stroke="#93c5fd"/>
+      <text x="780" y="564" text-anchor="middle">Aggregation: means, percentiles, confidence scores, categories</text>
+    </g>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="710" y="628" width="230" height="76" rx="18" fill="#ecfeff" stroke="#06b6d4" stroke-width="3"/>
+    <text x="825" y="662" text-anchor="middle" fill="#374151" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700">Reporting</text>
+    <text x="825" y="686" text-anchor="middle" fill="#6b7280" font-family="Inter, Arial, sans-serif" font-size="13">metrics and detailed results</text>
+  </g>
+
+  <path d="M348 254 L488 254" stroke="#4b5563" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M348 446 L488 446" stroke="#4b5563" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M348 626 L488 510" stroke="#4b5563" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M780 576 L812 622" stroke="#4b5563" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+</svg>
