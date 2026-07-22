@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { portfolio } from '../content/portfolio';
 
 type NavItem = {
@@ -51,9 +51,35 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
 
+const scrollToElement = (element: HTMLElement) => {
+  const startPosition = window.scrollY;
+  const targetPosition = element.getBoundingClientRect().top + window.scrollY;
+  const distance = targetPosition - startPosition;
+  const duration = 320;
+  const startTime = performance.now();
+
+  const easeOutCubic = (value: number) => 1 - Math.pow(1 - value, 3);
+
+  const animate = (currentTime: number) => {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    window.scrollTo(0, startPosition + distance * easeOutCubic(progress));
+
+    if (progress < 1) {
+      window.requestAnimationFrame(animate);
+    }
+  };
+
+  window.requestAnimationFrame(animate);
+};
+
 export default function App() {
   const [activeSection, setActiveSection] = useState('intro');
   const [activeItem, setActiveItem] = useState('intro');
+  const [isProgrammaticScroll, setIsProgrammaticScroll] = useState(false);
+  const scrollSettleTimeout = useRef<number | null>(null);
+  const mobileNavItemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const navigationSections: NavSection[] = useMemo(
     () =>
@@ -111,13 +137,15 @@ export default function App() {
     () => navigationSections.flatMap((section) => [section, ...(section.children ?? [])]),
     [navigationSections],
   );
-  const activeChildren =
-    navigationSections.find((section) => section.id === activeSection)?.children ?? [];
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      setIsProgrammaticScroll(true);
+      if (scrollSettleTimeout.current) {
+        window.clearTimeout(scrollSettleTimeout.current);
+      }
+      scrollToElement(element);
     }
   };
 
@@ -135,12 +163,43 @@ export default function App() {
 
       setActiveItem(currentItem.id);
       setActiveSection(currentItem.parentId ?? currentItem.id);
+
+      if (isProgrammaticScroll) {
+        if (scrollSettleTimeout.current) {
+          window.clearTimeout(scrollSettleTimeout.current);
+        }
+
+        scrollSettleTimeout.current = window.setTimeout(() => {
+          setIsProgrammaticScroll(false);
+        }, 180);
+      }
     };
 
     handleScroll();
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [navigationItems]);
+  }, [navigationItems, isProgrammaticScroll]);
+
+  useEffect(
+    () => () => {
+      if (scrollSettleTimeout.current) {
+        window.clearTimeout(scrollSettleTimeout.current);
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (window.innerWidth >= 1024) {
+      return;
+    }
+
+    mobileNavItemRefs.current[activeSection]?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'center',
+    });
+  }, [activeSection]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -162,7 +221,7 @@ export default function App() {
                   {section.label}
                 </span>
               </button>
-              {activeSection === section.id && section.children && (
+              {!isProgrammaticScroll && activeSection === section.id && section.children && (
                 <div className="space-y-2 border-l border-gray-200 pl-3">
                   {section.children.map((child) => (
                     <button
@@ -193,30 +252,22 @@ export default function App() {
           {navigationSections.map((section) => (
             <button
               key={section.id}
+              ref={(element) => {
+                mobileNavItemRefs.current[section.id] = element;
+              }}
               onClick={() => scrollToSection(section.id)}
-              className={`shrink-0 text-sm transition-colors ${
-                activeSection === section.id ? 'text-gray-900' : 'text-gray-400'
-              }`}
+              className="shrink-0 text-left"
             >
-              {section.label}
+              <span
+                className={`block text-sm transition-colors ${
+                  activeSection === section.id ? 'text-gray-900' : 'text-gray-400'
+                }`}
+              >
+                {section.label}
+              </span>
             </button>
           ))}
         </div>
-        {activeChildren.length > 0 && (
-          <div className="mt-2 flex gap-3 overflow-x-auto">
-            {activeChildren.map((child) => (
-              <button
-                key={child.id}
-                onClick={() => scrollToSection(child.id)}
-                className={`shrink-0 text-xs transition-colors ${
-                  activeItem === child.id ? 'text-gray-900' : 'text-gray-400'
-                }`}
-              >
-                {child.label}
-              </button>
-            ))}
-          </div>
-        )}
       </nav>
 
       <section id="intro" className="min-h-screen scroll-mt-24 flex items-center px-8 pt-24 lg:pt-0">
