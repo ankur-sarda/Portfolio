@@ -26,6 +26,14 @@ const parseProjectLink = (link: string) => {
   };
 };
 
+const assetSrc = (src: string) => {
+  if (!src.startsWith('/')) {
+    return src;
+  }
+
+  return `${import.meta.env.BASE_URL}${src.slice(1)}`;
+};
+
 export default function App() {
   const [activeSection, setActiveSection] = useState('intro');
 
@@ -104,7 +112,7 @@ export default function App() {
               const visualFrame = project.image ? (
                 <div className="aspect-video overflow-hidden bg-gray-100 rounded-2xl">
                   <img
-                    src={project.image}
+                    src={assetSrc(project.image)}
                     alt={project.imageAlt}
                     className={`h-full w-full ${project.imageFit === 'contain' ? 'object-contain p-4' : 'object-cover'}`}
                     loading="lazy"
